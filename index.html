@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>胶片分镜条核对台</title>
+    <title>胶片试映版本冻结台</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="shell">
       <header class="hero">
         <div>
-          <p class="eyebrow">纸质放映胶片整理</p>
-          <h1>胶片分镜条核对台</h1>
+          <p class="eyebrow">纸质放映胶片整理 · 试映版本管理</p>
+          <h1>胶片试映版本冻结台</h1>
         </div>
         <div class="hero-stats">
           <div>
@@ -25,6 +25,10 @@
           <div>
             <span>片段数</span>
             <strong id="segmentCount">0</strong>
+          </div>
+          <div>
+            <span>试映版本</span>
+            <strong id="versionStat">未冻结</strong>
           </div>
         </div>
       </header>
@@ -46,11 +50,24 @@
           </select>
         </label>
         <label>
+          破损情况
+          <select id="damageFilter">
+            <option value="all">全部</option>
+            <option value="完好">完好</option>
+            <option value="轻微划痕">轻微划痕</option>
+            <option value="齿孔破损">齿孔破损</option>
+            <option value="接片松动">接片松动</option>
+            <option value="需跳过">需跳过</option>
+          </select>
+        </label>
+        <label>
           搜索
-          <input id="searchInput" type="search" placeholder="片段编号或备注" />
+          <input id="searchInput" type="search" placeholder="片段编号、备注或处置" />
         </label>
         <button id="exportBtn">导出清单</button>
       </section>
+
+      <section id="freezeBar" class="panel freeze-bar"></section>
 
       <section class="layout">
         <aside class="panel">
@@ -90,27 +107,65 @@
             </label>
             <label>
               备注
-              <textarea id="noteInput" rows="4" placeholder="试映前要留意的画面、接片或声音点"></textarea>
+              <textarea id="noteInput" rows="4" placeholder="试映前要留意的画面、接片或声音点；接片松动时即处置备注"></textarea>
             </label>
             <button class="primary" type="submit">加入放映清单</button>
+            <p id="formLockedHint" class="form-locked-hint" hidden>版本冻结中：片段只读。试映中发现新破损，请在片段卡片上标记。</p>
           </form>
         </aside>
 
         <section class="panel list-panel">
           <div class="panel-head">
             <h2>放映顺序</h2>
-            <span>拖拽片段调整顺序</span>
+            <span id="listHeadHint">拖拽片段调整顺序</span>
           </div>
           <div id="segmentList" class="segment-list"></div>
         </section>
 
-        <aside class="panel warning-panel">
-          <h2>试映前核对</h2>
-          <div id="warningList" class="warning-list"></div>
-        </aside>
+        <div class="side-stack">
+          <section class="panel">
+            <h2>版本档案</h2>
+            <div id="versionList" class="version-list"></div>
+          </section>
+          <section class="panel warning-panel">
+            <h2>试映前核对</h2>
+            <div id="warningList" class="warning-list"></div>
+          </section>
+        </div>
       </section>
     </main>
 
-    <script src="app.js"></script>
+    <div id="damageModal" class="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="damageModalTitle">
+        <h2 id="damageModalTitle">标记新破损</h2>
+        <p class="modal-target">试映中发现问题的片段：<strong id="damageModalCode"></strong></p>
+        <form id="damageForm">
+          <label>
+            新破损情况
+            <select id="damageTypeInput">
+              <option value="轻微划痕">轻微划痕</option>
+              <option value="齿孔破损">齿孔破损</option>
+              <option value="接片松动">接片松动</option>
+              <option value="需跳过" selected>需跳过</option>
+            </select>
+          </label>
+          <label>
+            处置备注
+            <textarea id="damageNoteInput" rows="3" placeholder="例：画面跳动两次，已换备用片段；接片松动须填写处置"></textarea>
+          </label>
+          <p id="modalError" class="modal-error" hidden></p>
+          <p class="modal-hint">确认后当前版本解除冻结并保留快照；排除该片段后可再次冻结。</p>
+          <div class="modal-actions">
+            <button type="button" id="damageCancel">取消</button>
+            <button class="primary" type="submit">确认标记并解除冻结</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/rules.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>

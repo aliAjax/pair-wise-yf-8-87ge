@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>胶片分镜条核对台</title>
+    <title>胶片试映版本冻结台</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -11,7 +11,7 @@
       <header class="hero">
         <div>
           <p class="eyebrow">纸质放映胶片整理</p>
-          <h1>胶片分镜条核对台</h1>
+          <h1>胶片试映版本冻结台</h1>
         </div>
         <div class="hero-stats">
           <div>
@@ -25,6 +25,10 @@
           <div>
             <span>片段数</span>
             <strong id="segmentCount">0</strong>
+          </div>
+          <div>
+            <span>冻结版本</span>
+            <strong id="frozenVersionCount">0/0</strong>
           </div>
         </div>
       </header>
@@ -43,6 +47,17 @@
             <option value="偏青">偏青</option>
             <option value="偏黄">偏黄</option>
             <option value="褪色">褪色</option>
+          </select>
+        </label>
+        <label>
+          破损情况
+          <select id="damageFilter">
+            <option value="all">全部</option>
+            <option value="完好">完好</option>
+            <option value="轻微划痕">轻微划痕</option>
+            <option value="齿孔破损">齿孔破损</option>
+            <option value="接片松动">接片松动</option>
+            <option value="需跳过">需跳过</option>
           </select>
         </label>
         <label>
@@ -85,6 +100,10 @@
               </select>
             </label>
             <label>
+              处置备注
+              <input id="handlingInput" type="text" placeholder="接片松动时必填，例：已重新压片" />
+            </label>
+            <label>
               缩略图
               <input id="thumbInput" type="file" accept="image/*" />
             </label>
@@ -99,7 +118,7 @@
         <section class="panel list-panel">
           <div class="panel-head">
             <h2>放映顺序</h2>
-            <span>拖拽片段调整顺序</span>
+            <span>拖拽调整顺序；冻结片段只读，标记新破损可解除冻结</span>
           </div>
           <div id="segmentList" class="segment-list"></div>
         </section>
@@ -109,8 +128,49 @@
           <div id="warningList" class="warning-list"></div>
         </aside>
       </section>
+
+      <section class="versions-layout">
+        <aside class="panel">
+          <h2>冻结试映版本</h2>
+          <form id="freezeForm" class="freeze-form">
+            <label>
+              起始片段
+              <select id="freezeStart"></select>
+            </label>
+            <label>
+              结束片段
+              <select id="freezeEnd"></select>
+            </label>
+            <label>
+              放映室
+              <input id="roomInput" required placeholder="例：一号放映厅" />
+            </label>
+            <label>
+              版本备注
+              <textarea id="versionNoteInput" rows="3" placeholder="本轮试映的目的、拷贝批次等"></textarea>
+            </label>
+            <button class="primary" type="submit">冻结为试映版本</button>
+          </form>
+          <div id="freezeErrors" class="freeze-errors"></div>
+          <p class="hint">
+            冻结规则：区间内任一片段需跳过、接片松动却没有处置备注，或片段编号重复时，整次拒绝，原清单和版本不变。
+            冻结后区间内片段只读；标记新的破损会解除冻结并保留版本快照，排除该片段后可再次冻结。
+          </p>
+        </aside>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>版本记录</h2>
+            <span>最新版本排在前面</span>
+          </div>
+          <div id="versionList" class="version-list"></div>
+        </section>
+      </section>
     </main>
 
+    <script src="storage.js"></script>
+    <script src="rules.js"></script>
+    <script src="state.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
